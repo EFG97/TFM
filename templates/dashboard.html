@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+
+{% block script %}
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/bubbleChart.js') }}"></script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<script>
+    window.onload = function(){
+        var data = '{{ data|tojson|safe }}';
+        data = data.substring(1,data.length-1).replace(/\\n/g,'\\\\n')
+        var data = JSON.parse(data);
+        console.log(typeof(data))
+        bubbleChart(data)
+        d3.select("body").append("h1").text("Número de comentarios: " + data.length)
+    }
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+<div id="bubble_chart"></div>
+{% endblock %}
