@@ -1,26 +1,26 @@
 function bubbleChart(datos){
 
     //DIMENSIONES DEL GRÁFICO
-    var width = 400;
-    var height = 300;
-    var margin = {"top":80,"bottom":80,"left":80,"right":80};
+    var width = document.getElementById('bubble_chart').clientWidth;
+    var height = width;
+    var margin = {"top":width/8,"bottom":width/8,"left":width/8,"right":width/10};
 
     //ESCALAS
     escalaX = d3.scaleLinear()
         .domain([-1,1])
-        .range([margin.left,width+margin.left])
+        .range([margin.left,width-margin.right])
 
     escalaY = d3.scaleLinear()
         .domain(d3.extent(datos,d=>d.likeCount))
-        .range([height+margin.top,margin.top])
+        .range([height - margin.bottom,margin.top])
 
     escalaTamanio = d3.scaleLinear()
         .domain(d3.extent(datos,d=>d.likeCount))
-        .range([6,40])
+        .range([width/100,width/12])
 
     escalaColor = d3.scaleLinear()
         .domain([-1,1])
-        .range(["#FDFF45","#4745FF"])
+        .range(["#FFAF45","#4595FF"])
 
     //ELEMENTO TOOLTIP (contenedor html en el body)
     var tooltip = d3.select("#bubble_chart")
@@ -44,10 +44,33 @@ function bubbleChart(datos){
     }
 
     // ELEMENTO SVG
-    var elemento_SVG = d3.select("body")
+    var elemento_SVG = d3.select("#bubble_chart")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width)
+        .attr("height", height)
+    
+    elemento_SVG
+        .append("rect")
+        .attr("width",(width-margin.left-margin.right)/2)
+        .attr("height",(height-margin.top-margin.bottom))
+        .attr("x",(width-margin.left-margin.right)/2+margin.left)
+        //.attr("rx",width/40)
+        //.attr("ry",width/40)
+        .attr("y",margin.top)
+        .style("fill","#F6F6F6")
+
+
+    /*
+    elemento_SVG
+        .append("line")
+        .attr("y1",height-margin.bottom)
+        .attr("y2",margin.top)
+        .attr("x1",width/2)
+        .attr("x2",width/2)
+        .attr("stroke","#CBCBCB")
+        .attr("stroke-width","1")
+        .attr("stroke-dasharray","5,5")
+    */
 
     elemento_SVG
         .selectAll("circle")
@@ -63,6 +86,7 @@ function bubbleChart(datos){
         .attr("fill",d=>escalaColor(d.prediction.compound))
         //gestionamos enventos mouseover y mouseout
         //.attr('class','saturate')
+        
  
         .on("mouseover",function(d){
             d3.select(this).attr("class","saturate");
@@ -91,28 +115,31 @@ function bubbleChart(datos){
 
     elemento_SVG
         .append("g")
-        .attr("transform","translate(0," + (margin.top+height+10) + ")")
+        .attr("transform","translate(0," + (height - 0.75*margin.bottom) + ")")
         .call(ejeX)
+        //.style("stroke-width",2)
+        //.style("font-weight", "bolder")
         .append("text")
         .attr("class", "axis-title")
         .attr("x", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .attr("fill", "black")
-        .attr("transform","translate("+ (margin.left + width) +", 25)")
+        .attr("transform","translate("+ (width - 0.75*margin.left) +","+  (0.4*margin.bottom) + ")")
         .text("Polarity");
 
 
     elemento_SVG
         .append("g")
-        .attr("transform","translate("+ (margin.left + width/2) +",0)")
+        .attr("transform","translate("+ (margin.left) +",0)")
         //.transition()
         //.duration(500)
         //.ease(d3.easeBounce)
         //.delay(500)
         .call(ejeY)
         .attr("color","black")
-
+        //.style("stroke-width",2)
+        //.style("font-weight", "bolder")
         .append("text")
         .attr("class", "axis-title")
         .attr("transform", "rotate(-90)")
@@ -121,7 +148,11 @@ function bubbleChart(datos){
         .style("text-anchor", "end")
         .attr("fill", "black")
         .attr("transform","translate( 0,40)")
-        .text("Like Count");
+        .text("Like Count")
+        
+        
+
+        ;
 
     // Título
     /*
@@ -134,4 +165,5 @@ function bubbleChart(datos){
         .style("text-decoration", "underline")  
         .text("Value vs Date Graph");
     */
+    
 }

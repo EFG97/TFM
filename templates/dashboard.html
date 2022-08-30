@@ -5,6 +5,9 @@
 <script src="https://d3js.org/d3.v5.min.js"></script>
 
 <script src="{{ url_for('static', filename='js/bubbleChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pieChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lineChart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/legend.js') }}"></script>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
@@ -13,15 +16,88 @@
         var data = '{{ data|tojson|safe }}';
         data = data.substring(1,data.length-1).replace(/\\n/g,'\\\\n')
         var data = JSON.parse(data);
-        console.log(typeof(data))
         bubbleChart(data)
-        d3.select("body").append("h1").text("Número de comentarios: " + data.length)
+        
+        var dataPie = {"positive":0,"negative":0,"neutral":0};
+        var dataLine = []
+        var labels = ["+","-","0"]
+        
+    
+        for (let i=0; i<data.length; i++){
+            var prediction = data[i].prediction.compound;
+            var date = new Date(Date.parse(data[i].updatedAt));
+            date = date.toLocaleDateString('en-US');
+            //date = date.getMonth() + "/" + date.getDate()  +  "/" +  date.getFullYear() 
+
+            if (prediction == 0){
+                dataPie.neutral++
+                dataLine.push({date:date, prediction:"neutral"})
+            }
+            else if(prediction < 0){
+                dataPie.negative++
+                dataLine.push({date:date,prediction:"negative"})
+            }
+            else{
+                dataPie.positive++
+                dataLine.push({date:date,prediction:"positive"})
+            }
+        }
+
+        function arrUnique(arr) {
+            var cleaned = [];
+            arr.forEach(function(itm) {
+                var unique = true;
+                cleaned.forEach(function(itm2) {
+                    if (itm.date == itm2.date && itm.prediction == itm2.prediction){
+                        unique = false;
+                        itm2.count+=1;
+                    }
+                });
+                itm.count = 1;
+                if (unique) {cleaned.push(itm)};
+            });
+            return cleaned;
+        }
+
+        dataLine = arrUnique(dataLine);
+        dataLine.sort((a,b) =>  new Date(b.date) - new Date(a.date));
+
+        pieChart(dataPie)
+
+        lineChart(dataLine)      
+        
+        legend()
     }
+
+    
 </script>
 
 {% endblock %}
 
 
 {% block content %}
-<div id="bubble_chart"></div>
+<div class="row">
+
+    <div class="col-lg-2 col-md-4" >
+        
+        <div id="pie_chart" class="container border border-secondary rounded-3 my-4 p-0">
+        </div>
+        <div id="legend" class="container border border-secondary rounded-3 my-4 p-0">
+        </div>
+    </div>
+    
+    <div class="col-lg-5 col-md-8" >
+        
+        <div id="bubble_chart" class="border border-secondary container-fluid rounded-3 my-4 p-0">
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        
+        <div id="line-chart" class="border border-secondary container-fluid rounded-3 my-4">
+            
+        </div>
+    </div>
+    
+</div>
 {% endblock %}

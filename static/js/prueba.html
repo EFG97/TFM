@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    
+</head>
+<body>
+    <script>
+        data = [
+            {"date":"4/20/2021","prediction":"neutral","count":1},
+            {"date":"4/25/2021","prediction":"neutral","count":2},
+            {"date":"6/20/2021","prediction":"neutral","count":3},
+            {"date":"7/20/2021","prediction":"neutral","count":1},
+
+            {"date":"4/20/2021","prediction":"positive","count":6},
+            {"date":"4/30/2021","prediction":"positive","count":1},
+            {"date":"6/20/2021","prediction":"positive","count":2},
+            {"date":"7/20/2021","prediction":"positive","count":4},
+
+            {"date":"5/30/2021","prediction":"negative","count":6},
+            {"date":"6/20/2021","prediction":"negative","count":0},
+            {"date":"4/20/2021","prediction":"negative","count":0},
+            {"date":"7/20/2021","prediction":"negative","count":3},
+
+        ]
+    </script>
+    <script src="lineChart.js"></script>
+    <script>
+        window.onload = function(){
+            lineChart(data)
+        }
+    </script>
+    <div id="line-chart"></div>
+</body>
+</html>
